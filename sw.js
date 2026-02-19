@@ -1,4 +1,3 @@
-// importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
 // Open (or create) an IndexedDB database
 function openDB(dbName, storeName) {
   return new Promise((resolve, reject) => {
