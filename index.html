@@ -34,28 +34,15 @@
       object-fit: contain;
     }
 
-    /* GIF loader: fullscreen only on mobile */
-    .loader-gif {
+    /* Loader: fullscreen */
+    .loader-gif,
+    .loader-video {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      max-width: 400px;
-      max-height: 400px;
-      object-fit: contain;
-    }
-
-    @media (max-width: 568px) {
-      .loader-gif {
-        top: 0;
-        left: 0;
-        transform: none;
-        width: 100vw;
-        height: 100vh;
-        max-width: none;
-        max-height: none;
-        object-fit: cover;
-      }
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
     }
   </style>
   <script type="module" crossorigin src="https://cdn.jsdelivr.net/gh/nischaldev/boom_market_deploy@main/assets/index-BdDzwR6k.js"></script>
@@ -68,13 +55,30 @@
     <img id="loader-img" src="https://cdn.jsdelivr.net/gh/nischaldev/boom_market_deploy@main/images/boomconsole-icon.png" alt="boomconsole logo" class="loader-logo">
     <script>
       (function(){
-        var gif = new Image();
-        gif.onload = function(){
-          var img = document.getElementById('loader-img');
-          img.src = gif.src;
-          img.className = 'loader-gif';
-        };
-        gif.src = 'https://cdn.boomconcole.com/freeschema/elaraloader.gif';
+        var isMobile = window.innerWidth <= 568;
+        var app = document.getElementById('app');
+        if (isMobile) {
+          var gif = new Image();
+          gif.onload = function(){
+            var img = document.getElementById('loader-img');
+            img.src = gif.src;
+            img.className = 'loader-gif';
+          };
+          gif.src = 'https://cdn.boomconcole.com/freeschema/elaraloader.gif';
+        } else {
+          var video = document.createElement('video');
+          video.className = 'loader-video';
+          video.autoplay = true;
+          video.loop = true;
+          video.muted = true;
+          video.playsInline = true;
+          video.src = 'https://boomconcole.com/freeschema/d622114c-1ec2-477f-a574-2672bea78f80.mp4';
+          video.oncanplay = function(){
+            var img = document.getElementById('loader-img');
+            if (img) img.remove();
+            app.prepend(video);
+          };
+        }
       })();
     </script>
   </div>
