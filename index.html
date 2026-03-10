@@ -73,17 +73,26 @@
           video.muted = true;
           video.playsInline = true;
           video.src = 'https://boomconcole.com/freeschema/d622114c-1ec2-477f-a574-2672bea78f80.mp4';
+          function destroyVideo() {
+            video.pause();
+            video.removeAttribute('src');
+            video.load();
+            if (video.parentNode) video.remove();
+          }
           video.oncanplay = function(){
             var img = document.getElementById('loader-img');
             if (img) img.remove();
             app.prepend(video);
           };
-          setTimeout(function(){
-            video.pause();
-            video.removeAttribute('src');
-            video.load();
-            if (video.parentNode) video.remove();
-          }, 10000);
+          // Clean up when app content gets replaced
+          new MutationObserver(function(mutations, observer) {
+            if (!app.contains(video)) {
+              destroyVideo();
+              observer.disconnect();
+            }
+          }).observe(app, { childList: true });
+          // Fallback: force cleanup after 10s
+          setTimeout(destroyVideo, 10000);
         }
       })();
     </script>
