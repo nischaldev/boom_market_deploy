@@ -23,22 +23,38 @@
       font-family: sans-serif;
     }
 
-    .firework-gif-ad {
+    /* Initial logo: centered, no stretch */
+    .loader-logo {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      max-width: 300px;
-      max-height: 300px;
-      width: auto;
-      height: auto;
+      max-width: 200px;
+      max-height: 200px;
+      object-fit: contain;
+    }
+
+    /* GIF loader: fullscreen only on mobile */
+    .loader-gif {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 400px;
+      max-height: 400px;
       object-fit: contain;
     }
 
     @media (max-width: 568px) {
-      .firework-gif-ad {
-        max-width: 150px;
-        max-height: 150px;
+      .loader-gif {
+        top: 0;
+        left: 0;
+        transform: none;
+        width: 100vw;
+        height: 100vh;
+        max-width: none;
+        max-height: none;
+        object-fit: cover;
       }
     }
   </style>
@@ -49,11 +65,15 @@
 
 <body>
   <div id="app">
-    <img id="loader-img" src="https://cdn.jsdelivr.net/gh/nischaldev/boom_market_deploy@main/images/boomconsole-icon.png" alt="boomconsole logo" class="firework-gif-ad">
+    <img id="loader-img" src="https://cdn.jsdelivr.net/gh/nischaldev/boom_market_deploy@main/images/boomconsole-icon.png" alt="boomconsole logo" class="loader-logo">
     <script>
       (function(){
         var gif = new Image();
-        gif.onload = function(){ document.getElementById('loader-img').src = gif.src; };
+        gif.onload = function(){
+          var img = document.getElementById('loader-img');
+          img.src = gif.src;
+          img.className = 'loader-gif';
+        };
         gif.src = 'https://cdn.boomconcole.com/freeschema/elaraloader.gif';
       })();
     </script>
