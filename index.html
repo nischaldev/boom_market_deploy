@@ -78,6 +78,12 @@
             if (img) img.remove();
             app.prepend(video);
           };
+          setTimeout(function(){
+            video.pause();
+            video.removeAttribute('src');
+            video.load();
+            if (video.parentNode) video.remove();
+          }, 10000);
         }
       })();
     </script>
