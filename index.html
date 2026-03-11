@@ -23,27 +23,56 @@
       font-family: sans-serif;
     }
 
-    /* Initial logo: centered, no stretch */
-    .loader-logo {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      max-width: 200px;
-      max-height: 200px;
-      object-fit: contain;
-    }
-
-    /* Loader: fullscreen */
-    .loader-gif,
-    .loader-video {
+    /* 3D Loader: centered on screen */
+    .loader-container {
+      --logo-url: url("https://boomconcole.com/freeschema/96c2fcbb-d8ac-44f6-ac79-ed6004460790.png");
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      object-fit: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #fff;
+      z-index: 9999;
     }
+
+    .scene {
+      width: 120px;
+      height: 120px;
+      perspective: 800px;
+    }
+
+    .pyramid {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: spin 4s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotateX(-15deg) rotateY(0deg); }
+      to { transform: rotateX(-15deg) rotateY(360deg); }
+    }
+
+    .face {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      background:
+        var(--logo-url) center / cover no-repeat,
+        white;
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      transform-origin: 50% 0%;
+      backface-visibility: visible;
+    }
+
+    .front  { transform: rotateY(0deg) rotateX(30deg); }
+    .right  { transform: rotateY(90deg) rotateX(30deg); }
+    .back   { transform: rotateY(180deg) rotateX(30deg); }
+    .left   { transform: rotateY(270deg) rotateX(30deg); }
   </style>
   <script type="module" crossorigin src="https://cdn.jsdelivr.net/gh/nischaldev/boom_market_deploy@main/assets/index-BdDzwR6k.js"></script>
   <link rel="modulepreload" crossorigin href="https://cdn.jsdelivr.net/gh/nischaldev/boom_market_deploy@main/assets/mftsccs-browser-BXQ6glwA.js">
@@ -52,50 +81,16 @@
 
 <body>
   <div id="app">
-    <img id="loader-img" src="https://cdn.jsdelivr.net/gh/nischaldev/boom_market_deploy@main/images/boomconsole-icon.png" alt="boomconsole logo" class="loader-logo">
-    <script>
-      (function(){
-        var isMobile = window.innerWidth <= 568;
-        var app = document.getElementById('app');
-        if (isMobile) {
-          var gif = new Image();
-          gif.onload = function(){
-            var img = document.getElementById('loader-img');
-            img.src = gif.src;
-            img.className = 'loader-gif';
-          };
-          gif.src = 'https://cdn.boomconcole.com/freeschema/elaraloader.gif';
-        } else {
-          var video = document.createElement('video');
-          video.className = 'loader-video';
-          video.autoplay = true;
-          video.loop = true;
-          video.muted = true;
-          video.playsInline = true;
-          video.src = 'https://boomconcole.com/freeschema/d622114c-1ec2-477f-a574-2672bea78f80.mp4';
-          function destroyVideo() {
-            video.pause();
-            video.removeAttribute('src');
-            video.load();
-            if (video.parentNode) video.remove();
-          }
-          video.oncanplay = function(){
-            var img = document.getElementById('loader-img');
-            if (img) img.remove();
-            app.prepend(video);
-          };
-          // Clean up when app content gets replaced
-          new MutationObserver(function(mutations, observer) {
-            if (!app.contains(video)) {
-              destroyVideo();
-              observer.disconnect();
-            }
-          }).observe(app, { childList: true });
-          // Fallback: force cleanup after 10s
-          setTimeout(destroyVideo, 10000);
-        }
-      })();
-    </script>
+    <div id="loader-3d" class="loader-container">
+      <div class="scene">
+        <div class="pyramid">
+          <div class="face front"></div>
+          <div class="face right"></div>
+          <div class="face back"></div>
+          <div class="face left"></div>
+        </div>
+      </div>
+    </div>
   </div>
 </body>
 
