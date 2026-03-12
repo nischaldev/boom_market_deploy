@@ -44,6 +44,47 @@ function getFromDB(db, storeName, key) {
   });
 }
 
+// OneSignal handles the push event and shows notifications.
+// We listen for the notification being shown to update the PWA badge count on the home screen icon.
+self.addEventListener("notificationclick", (event) => {
+  // Clear badge when user taps the notification
+  if (navigator.setAppBadge) {
+    navigator.clearAppBadge().catch(() => {});
+  }
+
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if ("focus" in client) return client.focus();
+      }
+      return clients.openWindow("/");
+    })
+  );
+});
+
+// Listen for push events — OneSignal may consume this, but if it doesn't, we handle badge here
+self.addEventListener("push", (event) => {
+  if (!event.data) return;
+
+  let data = {};
+  try {
+    data = event.data.json();
+  } catch (e) {
+    return;
+  }
+
+  // OneSignal puts custom data inside additionalData
+  const customData = data.custom?.a || data.additionalData || data;
+  const badgeCount = customData.badgeCount;
+
+  if (badgeCount !== undefined && navigator.setAppBadge) {
+    event.waitUntil(
+      navigator.setAppBadge(Number(badgeCount)).catch(() => {})
+    );
+  }
+});
+
 // serviceworker.js
 self.addEventListener("fetch", (event) => {
   if (
